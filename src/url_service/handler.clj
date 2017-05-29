@@ -47,9 +47,7 @@
 (defn store-activity [ctx url]
   (swap! urls-map #(assoc % (hash-url url) url))
   (let [remote-addr (str (get-in ctx [:request :remote-addr]))]
-    (str remote-addr)
     (let [user-agent (str (get (get-in ctx [:request :headers]) "user-agent"))]
-      (str user-agent)
       (let [refferer (str (get (get-in ctx [:request :headers]) "referrer"))]
         (swap! activitity #(assoc % (.toString (now)) (->Urls (str "http://short.ly/"  (hash-url url)) url user-agent remote-addr refferer)))))
     ))
@@ -61,7 +59,7 @@
              :post! (fn [ctx]  (if (.isValid validator (str url))
                                  (store-activity ctx url)))
              :handle-created (fn [_] (if (.isValid validator (str url))
-                                       (hash-url url)))
+                                       (str "http://short.ly/" (hash-url url))))
              :handle-ok (fn [_] (str "Success")))
 
 (defresource do-unhash [shorturl]
